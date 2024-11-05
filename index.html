@@ -1,0 +1,57 @@
+<html>
+  <button id="google-pay-button">Pay with Google Pay</button>
+  <script src="https://pay.google.com/gp/p/api.js"></script>
+
+<script>
+  // Define your Google Pay API version
+  google.payments.api.ready.then(() => {
+    // Request a payment token for your payment provider
+    const paymentDataRequest = {
+      apiVersion: 2,
+      apiVersionMinor: 0,
+      allowedPaymentMethods: [
+        {
+          type: 'CARD',
+          parameters: {
+            allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+            allowedCardNetworks: ['VISA', 'MASTERCARD', 'AMEX'],
+          },
+          tokenizationSpecification: {
+            type: 'PAYMENT_GATEWAY',
+            parameters: {
+              // gateway: 'YOUR_GATEWAY_TOKENIZATION_SPECIFICATION',
+              // gatewayMerchantId: 'YOUR_GATEWAY_MERCHANT_ID',
+            },
+          },
+        },
+      ],
+      transactionInfo: {
+        totalPriceStatus: 'FINAL',
+        totalPriceLabel: 'Total',
+        totalPrice: '10.00',
+        currencyCode: 'USD',
+      },
+      merchantInfo: {
+        merchantName: 'Your Merchant Name',
+        merchantId: 'YOUR_MERCHANT_ID',
+      },
+      callbackIntents: ['PAYMENT_AUTHORIZATION'],
+    };
+
+    // Add a Google Pay payment button
+    const button = document.getElementById('google-pay-button');
+    button.addEventListener('click', () => {
+      if (google.payments.api.isReady()) {
+        google.payments.api.loadPaymentData(paymentDataRequest)
+          .then((paymentData) => {
+            // Send payment token to your server for processing
+            console.log(paymentData);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    });
+  });
+</script>
+</html>
